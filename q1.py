@@ -107,7 +107,6 @@ class GradesWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    # טעינת קובץ העיצוב QSS
     with open("style.qss", "r", encoding="utf-8") as f:
         app.setStyleSheet(f.read())
 
