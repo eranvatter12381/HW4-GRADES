@@ -66,15 +66,42 @@ class GradesWindow(QWidget):
         file_path, _ = QFileDialog.getOpenFileName(self, "בחר קובץ ציונים", "", "CSV Files (*.csv)")
         if not file_path:
             return
-        # כאן נכתוב את טעינת הנתונים
+        self.selected_file = file_path
+        self.student_ids = []
+        self.original_grades = []
+        self.corrected_grades = []
+        with open(self.selected_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        for line in lines[1:]:
+            line = line.strip()
+            if line == "":
+                continue
+            parts = line.split(",")
+            student_id = parts[0]
+            grade = int(parts[1])
+            self.student_ids.append(student_id)
+            self.original_grades.append(grade)
+            self.corrected_grades.append(grade)
+        self.update_table()
 
     def apply_bonus(self):
-        # כאן נכתוב את הוספת הבונוס
-        pass
+        bonus = self.bonus_input.value()
+
+        for i in range(len(self.original_grades)):
+            new_grade = self.original_grades[i] + bonus
+            if new_grade > 100:
+                new_grade = 100
+            self.corrected_grades[i] = new_grade
+        self.update_table()
 
     def update_file(self):
-        # כאן נכתוב את עדכון הקובץ ופתיחתו
-        pass
+        if self.selected_file == "":
+            return
+        with open(self.selected_file, "w", encoding="utf-8") as f:
+            f.write("ID,Grade\n")
+            for i in range(len(self.student_ids)):
+                f.write(f"{self.student_ids[i]},{self.corrected_grades[i]}\n")
+        self.open_file_in_excel(self.selected_file)
 
 
 if __name__ == "__main__":
